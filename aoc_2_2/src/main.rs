@@ -18,10 +18,5 @@ pub fn split_line(line: &str) -> (i32, i32, char, &str){
 
 pub fn is_valid(element: &(i32, i32, char, &str)) -> bool {
     let characters: Vec<char> = element.3.chars().collect();
-    if (characters[(element.0 as usize) - 1] == element.2 && characters[(element.1 as usize) - 1] != element.2) || (characters[(element.0 as usize) - 1] != element.2 && characters[(element.1 as usize) - 1] == element.2) {
-        return true;
-    } 
-
-    false
-
+    (characters[(element.0 as usize) - 1] == element.2 && characters[(element.1 as usize) - 1] != element.2) || (characters[(element.0 as usize) - 1] != element.2 && characters[(element.1 as usize) - 1] == element.2)
 }
