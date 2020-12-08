@@ -34,7 +34,6 @@ fn validate_fields(pass: &String) -> bool {
         }
     ).collect::<Vec<_>>();
     for elem in map {
-        counter+=1;
         println!("{} : {}", elem.0, elem.1);
         if elem.0[..].len() == 0 {
             continue;
