@@ -25,16 +25,13 @@ fn main() {
 
 
 fn validate_fields(pass: &String) -> bool {
-    let fields: Vec<&str> = pass.as_str().split(" ").collect();
+    let fields = pass.as_str().split(" ").collect::<Vec<_>>();
 
-    let mut map: Vec<(&str, &str)> = Vec::new();
-
-    for elem in fields {
-        let sep = elem.split(":").collect::<Vec<_>>();
-        if sep.len() == 2 {
-            map.push((sep[0], sep[1]));
+    let map = fields.iter().map(|&pass| {
+        let temp = pass.split(':').collect::<Vec<_>>();
+        (temp[0], temp[1])
         }
-    }
+    ).collect::<Vec<_>>();
 
     for elem in map {
         if elem.0[..].len() == 0 {
@@ -113,7 +110,7 @@ fn test_hcl(){
     assert!(validate_hcl("#abc123"));
     assert!(!validate_hcl("abc123#"));
     assert!(!validate_hcl("abc1234"));
-    assert!(!validate_hcl("#abh123"));
+    assert!(!validate_hcl("#123abz"));
 }
 
 #[test]
