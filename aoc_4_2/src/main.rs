@@ -1,23 +1,18 @@
 fn main() {
     let contents= std::fs::read_to_string("./res/input.txt").expect("Could not read file!");
-    
-    let passports = contents.split("\n\n").collect::<Vec<&str>>();
 
-    let validity = passports.iter().all(|str| !str.contains("\r"));
+
+    let validity = contents.lines().collect::<Vec<_>>().iter().all(|str| !str.contains("\r"));
     assert!(validity);
+
+    let passports = contents.split("\n\n").collect::<Vec<&str>>();
 
     let folded_passports = passports.iter().map(|&pass| {
         let temp: String = pass.lines().collect::<Vec<&str>>().join(" ");
         return temp;
     }).collect::<Vec<_>>();
-    let fields = vec!["byr".to_string(),"iyr".to_string(),"eyr".to_string(),"hgt".to_string(),"hcl".to_string(),"ecl".to_string(),"pid".to_string()];
 
     let valid_passes = folded_passports.iter().filter(|pass| {
-        for elem in fields.iter() {
-            if !pass.contains(elem){
-                return false;
-            }
-        }
         validate_fields(pass)
     }).collect::<Vec<_>>();
     println!("{}", valid_passes.len());
@@ -27,24 +22,31 @@ fn main() {
 fn validate_fields(pass: &String) -> bool {
     let fields = pass.as_str().split(" ").collect::<Vec<_>>();
 
+    for elem in FIELDS.iter() {
+        if !pass.contains(elem){
+            return false;
+        }
+    }
+
     let map = fields.iter().map(|&pass| {
         let temp = pass.split(':').collect::<Vec<_>>();
         (temp[0], temp[1])
         }
     ).collect::<Vec<_>>();
-
     for elem in map {
+        counter+=1;
+        println!("{} : {}", elem.0, elem.1);
         if elem.0[..].len() == 0 {
             continue;
         }
         match &elem.0[..] {
-            "byr" =>if !validate_byr(elem.1) {continue} else {return false},
-            "hgt" =>if !validate_hgt(elem.1) {continue} else {return false},
-            "iyr" =>if !validate_iyr(elem.1) {continue} else {return false},
-            "eyr" =>if !validate_eyr(elem.1) {continue} else {return false},
-            "hcl" =>if !validate_hcl(elem.1) {continue} else {return false},
-            "ecl" =>if !validate_ecl(elem.1) {continue} else {return false},
-            "pid" =>if !validate_pid(elem.1) {continue} else {return false},
+            "byr" =>if validate_byr(elem.1) {continue} else {return false},
+            "hgt" =>if validate_hgt(elem.1) {continue} else {return false},
+            "iyr" =>if validate_iyr(elem.1) {continue} else {return false},
+            "eyr" =>if validate_eyr(elem.1) {continue} else {return false},
+            "hcl" =>if validate_hcl(elem.1) {continue} else {return false},
+            "ecl" =>if validate_ecl(elem.1) {continue} else {return false},
+            "pid" =>if validate_pid(elem.1) {continue} else {return false},
             _ => continue,
         }
     }
@@ -117,7 +119,7 @@ fn test_hcl(){
 fn test_hgt(){
     assert!(validate_hgt("160cm"));
     assert!(validate_hgt("60in"));
-    assert!(!validate_hgt("130cm"));
+    assert!(!validate_hgt("66cm"));
     assert!(!validate_hgt("20in"));
     assert!(!validate_hgt("140"));
     assert!(!validate_hgt("2000"));
@@ -148,4 +150,4 @@ fn test_pid(){
 static SCOPE: &str = "abcdef0123456789";
 static NUM_SCOPE: &str = "0123456789";
 static EYE_COLORS: [&str; 7] = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];
-
+static FIELDS: [&str; 7] = ["byr" ,"iyr","eyr","hgt","hcl","ecl","pid"];
