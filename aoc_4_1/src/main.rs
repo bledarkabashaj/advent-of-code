@@ -24,4 +24,3 @@ fn main() {
 
 }
 
-// let _fields = ["byr","iyr","eyr","hgt","hcl","ecl","pid","cid"]
