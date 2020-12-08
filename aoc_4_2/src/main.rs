@@ -1,59 +1,42 @@
 fn main() {
     let contents= std::fs::read_to_string("./res/input.txt").expect("Could not read file!");
-
+    
     let passports = contents.split("\n\n").collect::<Vec<&str>>();
+
+    let validity = passports.iter().all(|str| !str.contains("\r"));
+    assert!(validity);
 
     let folded_passports = passports.iter().map(|&pass| {
         let temp: String = pass.lines().collect::<Vec<&str>>().join(" ");
         return temp;
-    });
+    }).collect::<Vec<_>>();
     let fields = vec!["byr".to_string(),"iyr".to_string(),"eyr".to_string(),"hgt".to_string(),"hcl".to_string(),"ecl".to_string(),"pid".to_string()];
 
-    let valid_passes = folded_passports.filter(|pass| {
+    let valid_passes = folded_passports.iter().filter(|pass| {
         for elem in fields.iter() {
             if !pass.contains(elem){
                 return false;
             }
         }
-        true
-    }).collect::<Vec<String>>();
-
-    let mut count: i32 = 0;
-
-    for elem in valid_passes {
-        if validate_fields(&elem) {
-            count += 1;
-        }
-    }
-
-    println!("{}", count);
-
+        validate_fields(pass)
+    }).collect::<Vec<_>>();
+    println!("{}", valid_passes.len());
 }
-
-static SCOPE: &str = "abcdef123456789";
-static NUM_SCOPE: &str = "0123456789";
-static EYE_COLORS: [&str; 7] = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];
-
 
 
 fn validate_fields(pass: &String) -> bool {
     let fields: Vec<&str> = pass.as_str().split(" ").collect();
-    // let map: Vec<(String, String)> = fields.iter().map(|&field| {
-        
-    //     let sep: Vec<&str> = field.split(":").collect();
-    //     return (sep[0].to_string(), sep[1].to_string());
-    // }).collect();
-        
+
     let mut map: Vec<(&str, &str)> = Vec::new();
 
     for elem in fields {
-        let sep = elem.split(":").collect::<Vec<&str>>();
+        let sep = elem.split(":").collect::<Vec<_>>();
         if sep.len() == 2 {
             map.push((sep[0], sep[1]));
         }
     }
 
-    for elem in &map {
+    for elem in map {
         if elem.0[..].len() == 0 {
             continue;
         }
@@ -68,9 +51,6 @@ fn validate_fields(pass: &String) -> bool {
             _ => continue,
         }
     }
-
-    map.clear();
-
     true
 }
 
@@ -109,19 +89,7 @@ fn validate_hcl(value: &str) -> bool {
     if value.chars().nth(0).unwrap() != '#' {
         return false;
     }
-    let mut counter: usize = 0;
-    for elem in value.chars() {
-        if counter == 0 {
-            counter += 1;
-            continue;
-        } else {
-            if !SCOPE.contains(elem) {
-                return false;
-            }
-        }
-        counter += 1;
-    }
-    true
+    value.chars().count() == 7 && value.chars().skip(1).all(|character| {SCOPE.contains(character)}) 
 }
 
 fn validate_ecl(value: &str) -> bool {
@@ -139,3 +107,48 @@ fn validate_pid(value: &str) -> bool {
     }
     true
 }
+
+#[test]
+fn test_hcl(){
+    assert!(validate_hcl("#abc123"));
+    assert!(!validate_hcl("abc123#"));
+    assert!(!validate_hcl("abc1234"));
+    assert!(!validate_hcl("#abh123"));
+}
+
+#[test]
+fn test_hgt(){
+    assert!(validate_hgt("160cm"));
+    assert!(validate_hgt("60in"));
+    assert!(!validate_hgt("130cm"));
+    assert!(!validate_hgt("20in"));
+    assert!(!validate_hgt("140"));
+    assert!(!validate_hgt("2000"));
+}
+
+
+#[test]
+fn test_ecl(){
+    assert!(validate_ecl("amb"));
+    assert!(validate_ecl("blu"));
+    assert!(validate_ecl("brn"));
+    assert!(!validate_ecl("ass"));
+    assert!(!validate_ecl("egt"));
+    assert!(!validate_ecl("lel"));
+}
+
+#[test]
+fn test_pid(){
+    assert!(validate_pid("012345678"));
+    assert!(validate_pid("123456789"));
+    assert!(!validate_pid("123424fd3"));
+    assert!(!validate_pid("23232323"));
+    assert!(!validate_pid("1234238085"));
+}
+
+
+
+static SCOPE: &str = "abcdef0123456789";
+static NUM_SCOPE: &str = "0123456789";
+static EYE_COLORS: [&str; 7] = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"];
+
