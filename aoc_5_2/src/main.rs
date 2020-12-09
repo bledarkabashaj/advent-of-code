@@ -20,10 +20,10 @@ fn binary_move(characters: &str) -> (i32, i32){
     let mut result: (i32, i32) = (0, 0);
     for elem in characters.chars() {
         match elem {
-            'F' => {if (lower_bound + upper_bound) % 2 == 0 {upper_bound = (lower_bound + upper_bound) / 2} else {upper_bound = (lower_bound + upper_bound) / 2}},
-            'B' => {if (lower_bound + upper_bound) % 2 == 0 {lower_bound = (lower_bound + upper_bound) / 2} else {lower_bound = (lower_bound + upper_bound) / 2 + 1}},
-            'R' => {if (right_side + left_side) % 2 == 0 {right_side = (right_side + left_side) / 2} else {right_side = (right_side + left_side) / 2 + 1}},
-            'L' => {if (right_side + left_side) % 2 == 0 {left_side = (right_side + left_side) / 2} else {left_side = (right_side + left_side) / 2}},
+            'F' => {upper_bound = (lower_bound + upper_bound) / 2},
+            'B' => {lower_bound = (lower_bound + upper_bound) / 2 + ((lower_bound + upper_bound) % 2)},
+            'R' => {right_side = (right_side + left_side) / 2 + ((right_side + left_side) % 2)},
+            'L' => {left_side = (right_side + left_side) / 2},
             _ => {},
         }
     }
