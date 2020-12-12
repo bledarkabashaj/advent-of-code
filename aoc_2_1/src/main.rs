@@ -1,18 +1,14 @@
 fn main() {
     let contents = std::fs::read_to_string("./res/input.txt").expect("Could not read file");
-    let workspace: Vec<(i32, i32, char, &str)> = contents.lines().collect::<Vec<&str>>().iter().map(|l| split_line(l) ).collect();
-    let result = workspace.iter().filter(|&elem| is_valid(elem)).count();
-    print!("{}", result);
+    let count: usize = contents.lines().collect::<Vec<&str>>().iter().map(|&l| {split_line(l)} ).filter(|elem| is_valid(elem)).count();
+    println!("{}", count);
 }
 
 
 
 pub fn split_line(line: &str) -> (i32, i32, char, &str){
-    let vec: Vec<&str> = line.split(" ").collect();
-    let minmax: Vec<i32> = vec[0].split("-").map(|l| l.parse::<i32>().unwrap()).collect();
-    let character = vec[1].chars().nth(0).unwrap();
-    let password = vec[2];
-    (minmax[0], minmax[1], character, password)
+    let minmax: Vec<&str> = line.split(['-',' ',':'].as_ref()).collect();
+    (minmax[0].parse::<i32>().unwrap(), minmax[1].parse::<i32>().unwrap(), minmax[2].chars().nth(0).unwrap(), minmax[4])
 }
 
 
